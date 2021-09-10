@@ -1,10 +1,9 @@
-# Application ID : 885880844345045034
-# Token : ODg1ODgwODQ0MzQ1MDQ1MDM0.YTte1A.e79VvbSR0QrNzpbz2qcnZSpn_xY
-# Permission : 8
-
 import discord
 import random
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = discord.Client()
 
@@ -44,4 +43,4 @@ async def on_message(message):
     elif message.content == "ขอไปโดยตึกตายไป" :
         await message.channel.send(file=discord.File("images/IMG_1174.jpg"))
 
-client.run("ODg1ODgwODQ0MzQ1MDQ1MDM0.YTte1A.e79VvbSR0QrNzpbz2qcnZSpn_xY")
+client.run(os.getenv('TOKEN'))
