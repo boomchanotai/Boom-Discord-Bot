@@ -40,7 +40,7 @@ async def on_message(message):
         #         print(image)
     elif message.content == "ขอซีมอสทรงแหลม" :
         await message.channel.send(file=discord.File("images/image4.jpeg"))
-    elif message.content == "ขอไปโดยตึกตายไป" :
+    elif message.content == "ขอไปโดดตึกตายไป" :
         await message.channel.send(file=discord.File("images/IMG_1174.jpg"))
 
 client.run(os.getenv('TOKEN'))
