@@ -3,15 +3,25 @@ import random
 import os
 from dotenv import load_dotenv
 
+from discord.ext import commands
+
+
+from discord.utils import get
+from discord import FFmpegPCMAudio
+from youtube_dl import YoutubeDL
+
+
 load_dotenv()
 
-client = discord.Client()
+# client = discord.Client()
 
-@client.event
+bot = commands.Bot(command_prefix="$", help_command=None)
+
+@bot.event
 async def on_ready() :
-    print(f"Logged in as {client.user}")
+    print(f"Logged in as {bot.user}")
 
-@client.event
+@bot.event
 async def on_message(message):
     if message.content == "Tui is gay":
         for i in range(5):
@@ -43,4 +53,34 @@ async def on_message(message):
     elif message.content == "ขอไปโดดตึกตายไป" :
         await message.channel.send(file=discord.File("images/IMG_1174.jpg"))
 
-client.run(os.getenv('TOKEN'))
+    await bot.process_commands(message)
+
+@bot.command()
+async def play(ctx, url):
+    channel = ctx.author.voice.channel
+    voice_client = get(bot.voice_clients, guild=ctx.guild)
+
+    if not ctx.author.voice:
+        await ctx.send("You are not in a voice channel")
+        return
+    
+    if voice_client == None:
+        await ctx.channel.send("Joined")
+        print(channel)
+        await channel.connect()
+        voice_client = get(bot.voice_clients, guild=ctx.guild)
+
+    VDL_OPTIONS = { 'format': 'bestaudio', 'noplaylist': 'True' }
+    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
+    if not voice_client.is_playing():
+        with YoutubeDL(VDL_OPTIONS) as ydl:
+            info = ydl.extract_info(url, download=False)
+        URL = info['formats'][0]['url']
+        voice_client.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+        voice_client.is_playing()
+    else:
+        await ctx.channel.send("Already playing !")
+        return
+
+bot.run(os.getenv('TOKEN'))
