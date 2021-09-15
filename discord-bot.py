@@ -131,10 +131,6 @@ async def resume(ctx):
         await ctx.channel.send(f"❌❌❌ You aren't in `{voice_client.channel.name}`")
         return
     
-    if not voice_client.is_playing():
-        await ctx.channel.send(f"❌❌❌ You aren't listen to anything !")
-        return
-    
     voice_client.resume()
 
 bot.run(os.getenv('TOKEN'))
