@@ -88,7 +88,7 @@ async def play(ctx, url):
 @bot.command()
 async def leave(ctx):
     voice_client = get(bot.voice_clients, guild=ctx.guild)
-    await voice_client.stop()
+    voice_client.stop()
     await voice_client.disconnect()
 
 @bot.command()
