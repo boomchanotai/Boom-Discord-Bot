@@ -10,6 +10,7 @@ from discord.utils import get
 from discord import FFmpegPCMAudio
 from youtube_dl import YoutubeDL
 
+import pafy
 
 load_dotenv()
 
@@ -43,11 +44,6 @@ async def on_message(message):
         imageList = os.listdir("images")
         imageList.remove(".DS_Store")
         await message.channel.send(file=discord.File("images/" + random.choice(imageList)))
-        # for image in imageList:
-        #     if image.find(".DS_Store") == 0:
-        #         continue
-        #     else :
-        #         print(image)
     elif message.content == "ขอซีมอสทรงแหลม" :
         await message.channel.send(file=discord.File("images/image4.jpeg"))
     elif message.content == "ขอไปโดดตึกตายไป" :
@@ -65,8 +61,7 @@ async def play(ctx, url):
         return
     
     if voice_client == None:
-        await ctx.channel.send("Joined")
-        print(channel)
+        await ctx.channel.send(f":thumbsup: Joined `{channel.name}`")
         await channel.connect()
         voice_client = get(bot.voice_clients, guild=ctx.guild)
 
@@ -74,6 +69,13 @@ async def play(ctx, url):
     FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
     if not voice_client.is_playing():
+        await ctx.channel.send(f":musical_note: Searching :mag_right: `{url}`")
+        try:
+            video = pafy.new(url)
+            value = video.title
+            await ctx.channel.send(f"Playing :notes: `{value}` - Now!")
+        except:
+            await ctx.channel.send(f"Playing :notes: `มึงใส่ลิ้งค์ให้ถูกไอสัส กูจะได้หาชื่อมาแสดงได้` - Now!")
         with YoutubeDL(VDL_OPTIONS) as ydl:
             info = ydl.extract_info(url, download=False)
         URL = info['formats'][0]['url']
@@ -82,5 +84,57 @@ async def play(ctx, url):
     else:
         await ctx.channel.send("Already playing !")
         return
+
+@bot.command()
+async def leave(ctx):
+    voice_client = get(bot.voice_clients, guild=ctx.guild)
+    await voice_client.disconnect()
+
+@bot.command()
+async def stop(ctx):
+    voice_client = get(bot.voice_clients, guild=ctx.guild)
+    if voice_client == None:
+        await ctx.channel.send("❌❌❌ Bot isn't connected to Voice Channel !")
+        return
+
+    if voice_client.channel != ctx.author.voice.channel:
+        await ctx.channel.send(f"❌❌❌ You aren't in `{voice_client.channel.name}`")
+        return
+    
+    voice_client.stop()
+
+@bot.command()
+async def pause(ctx):
+    voice_client = get(bot.voice_clients, guild=ctx.guild)
+    if voice_client == None:
+        await ctx.channel.send("❌❌❌ Bot isn't connected to Voice Channel !")
+        return
+
+    if voice_client.channel != ctx.author.voice.channel:
+        await ctx.channel.send(f"❌❌❌ You aren't in `{voice_client.channel.name}`")
+        return
+    
+    if not voice_client.is_playing():
+        await ctx.channel.send(f"❌❌❌ You aren't listen to anything !")
+        return
+    
+    voice_client.pause()
+
+@bot.command()
+async def resume(ctx):
+    voice_client = get(bot.voice_clients, guild=ctx.guild)
+    if voice_client == None:
+        await ctx.channel.send("❌❌❌ Bot isn't connected to Voice Channel !")
+        return
+
+    if voice_client.channel != ctx.author.voice.channel:
+        await ctx.channel.send(f"❌❌❌ You aren't in `{voice_client.channel.name}`")
+        return
+    
+    if not voice_client.is_playing():
+        await ctx.channel.send(f"❌❌❌ You aren't listen to anything !")
+        return
+    
+    voice_client.resume()
 
 bot.run(os.getenv('TOKEN'))
