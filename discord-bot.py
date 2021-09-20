@@ -48,6 +48,8 @@ async def on_message(message):
         await message.channel.send(file=discord.File("images/image4.jpeg"))
     elif message.content == "ขอไปโดดตึกตายไป" :
         await message.channel.send(file=discord.File("images/IMG_1174.jpg"))
+    elif message.content == "อยากดูดราก้อนบอล" :
+        await message.channel.send("https://www.youtube.com/watch?v=QvxVmSZL_Ro")
 
     await bot.process_commands(message)
 

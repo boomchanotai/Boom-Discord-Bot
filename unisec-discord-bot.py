@@ -63,7 +63,6 @@ async def on_message(ctx):
             team_list_channel = [x for x in guild.channels if x.name.find("team-list") != -1][0]
 
             messages = await team_list_channel.history(limit=100).flatten()
-
             for message in messages :
                 print(message.content)
 
